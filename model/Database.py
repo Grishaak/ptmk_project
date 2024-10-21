@@ -3,16 +3,19 @@ from psycopg2 import errors
 
 
 class Database:
-    def __init__(self, db_name, host="127.0.0.1", password=None):
+    def __init__(self, db_name, host, user, password, port):
         self.connection = None
         self.cursor = None
         self.dbname = 'maguro_review'
         self.host = host
+        self.user = user
+        self.password = password
+        self.port = port
 
     def connect(self):
         try:
-            self.connection = psycopg2.connect(dbname=self.dbname, user='postgres', password=self.password,
-                                               host=self.host)
+            self.connection = psycopg2.connect(dbname=self.dbname, user=self.user, password=self.password,
+                                               host=self.host, port=self.port)
             self.cursor = self.connection.cursor()
         except Exception as e:
             print(f"Error connecting to database: {e}")

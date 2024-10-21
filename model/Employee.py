@@ -21,3 +21,6 @@ class Employee:
 
     def __str__(self):
         return f"Employee: {self.get_full_name()}, Age: {self.get_age()}, Sex: {self.sex}"
+
+    def get_values(self):
+        return self.firstname, self.middlename, self.lastname, self.birthdate, self.sex

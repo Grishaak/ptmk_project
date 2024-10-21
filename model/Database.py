@@ -3,10 +3,10 @@ from psycopg2 import errors
 
 
 class Database:
-    def __init__(self, db_name, host, user, password, port):
+    def __init__(self, dbname, host, user, password, port):
         self.connection = None
         self.cursor = None
-        self.dbname = 'maguro_review'
+        self.dbname = dbname
         self.host = host
         self.user = user
         self.password = password
@@ -20,29 +20,11 @@ class Database:
         except Exception as e:
             print(f"Error connecting to database: {e}")
             self.close()
-
-        print(f"Connected to {self.dbname} on {self.host}")
+        else:
+            return self.connection, self.cursor
 
     def close(self):
         if self.cursor:
             self.cursor.close()
         if self.connection:
             self.connection.close()
-            print(f"Closed connection to {self.dbname} on {self.host}")
-
-    def create_table(self):
-        try:
-            self.cursor.execute("""
-                CREATE TABLE IF NOT EXISTS employees (
-                    id SERIAL PRIMARY KEY,
-                    firstname VARCHAR(50) NOT NULL,
-                    middlename VARCHAR(50),
-                    lastname VARCHAR(50) NOT NULL,
-                    birthdate DATE NOT NULL,
-                    sex VARCHAR(10) NOT NULL
-                )
-            """)
-            self.connection.commit()
-            print("Employees table created successfully.")
-        except errors.DatabaseError as e:
-            print(f"Error creating employees table: {e}")

@@ -1,7 +1,7 @@
 from psycopg2 import extensions, sql, errors
-from Database import Database
-from Employee import Employee
-from parameters import db_name, port, password, user, host
+from model.Database import Database
+from model.Employee import Employee
+from model.parameters import db_name, port, password, user, host
 
 
 class Manager:
@@ -9,7 +9,7 @@ class Manager:
 
     def __init__(self):
         self.database = Database(db_name, host, user, password, port)
-        self.connection, self.cursor = self.database.connection()
+        self.connection, self.cursor = self.database.connect()
 
     def __str__(self):
         return f'Manager: {self.database}'
@@ -27,15 +27,19 @@ class Manager:
     def create_table(self):
         try:
             self.cursor.execute(sql.SQL("""
+                             DROP TABLE IF EXISTS {};
+                            """).format(sql.Identifier(self.TABLE_NAME)))
+            self.cursor.execute(sql.SQL("""
                  CREATE TABLE IF NOT EXISTS {} (
                      id SERIAL PRIMARY KEY,
                      firstname VARCHAR(50) NOT NULL,
-                     middlename VARCHAR(50),
+                     middle_name VARCHAR(50),
                      lastname VARCHAR(50) NOT NULL,
                      birthdate DATE NOT NULL,
                      sex VARCHAR(10) NOT NULL
                  )
-             """).format(sql.Identifier(self.TABLE_NAME)))
+             """).format(sql.Identifier(self.TABLE_NAME)),
+                                sql.Identifier(self.TABLE_NAME))
         except errors.DatabaseError as e:
             print(f"Error creating employees table: {e.cursor}")
 
@@ -43,8 +47,25 @@ class Manager:
         try:
             employee = Employee(*args, **kwargs)
             self.cursor.execute(sql.SQL("""
-                 INSERT INTO {} (firstname, middlename, lastname, birthdate, sex)
-                 VALUES (%s, %s, %s, %s, %s)
-             """).format(sql.Identifier(self.TABLE_NAME)), employee.get_values())
+                 INSERT INTO {} (firstname, middle_name, lastname, birthdate, sex)
+                 VALUES ({})
+             """).format(sql.Identifier(self.TABLE_NAME),
+                         sql.SQL(', ').join(map(sql.Literal, employee.get_values()))
+                         )
+                                )
         except errors.DatabaseError as e:
             raise e
+
+    def show_all_employees(self):
+        try:
+            self.cursor.execute(sql.SQL("""
+                 SELECT * FROM {}
+             """).format(sql.Identifier(self.TABLE_NAME)))
+            rows = self.cursor.fetchall()
+            for row in rows:
+                print(*row)
+        except errors.DatabaseError as e:
+            print(f"Error showing employees: {e.cursor}")
+
+    def close_connection(self):
+        self.database.close()

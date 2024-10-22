@@ -13,8 +13,13 @@ class Controller:
         self.controller.create_table()
 
     def insert_data(self, *args, **kwargs):
-        # employee = self.controller.create_employee()
         self.controller.insert_employee(*args, **kwargs)
+
+    def show_data(self):
+        self.controller.show_all_employees()
 
     def logging(self):
         pass
+
+    def close_connection(self):
+        self.controller.close_connection()

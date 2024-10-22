@@ -6,8 +6,8 @@
 # Учтите, что введенные данные должны быть корректными, иначе возникнет ошибка
 # несуществующей базы данных.
 
-db_name = None
+db_name = 'employee_db'
 host = '127.0.0.1'
-user = None
-password = None
+user = 'maguro'
+password = 'vbifyz228422'
 port = '5432'

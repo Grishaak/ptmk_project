@@ -17,9 +17,9 @@ class Database:
             self.connection = psycopg2.connect(dbname=self.dbname, user=self.user, password=self.password,
                                                host=self.host, port=self.port)
             self.cursor = self.connection.cursor()
-        except Exception as e:
-            print(f"Error connecting to database: {e}")
+        except ConnectionError as e:
             self.close()
+            raise e
         else:
             return self.connection, self.cursor
 

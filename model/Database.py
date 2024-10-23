@@ -1,30 +1,12 @@
 import psycopg2
 from psycopg2 import errors
 
+# Класс для представления Database в виде набора параметров для подключения к ней.
 
 class Database:
-    def __init__(self, dbname, host, user, password, port):
-        self.connection = None
-        self.cursor = None
+    def __init__(self, dbname, user, password, host, port):
         self.dbname = dbname
-        self.host = host
         self.user = user
         self.password = password
+        self.host = host
         self.port = port
-
-    def connect(self):
-        try:
-            self.connection = psycopg2.connect(dbname=self.dbname, user=self.user, password=self.password,
-                                               host=self.host, port=self.port)
-            self.cursor = self.connection.cursor()
-        except ConnectionError as e:
-            self.close()
-            raise e
-        else:
-            return self.connection, self.cursor
-
-    def close(self):
-        if self.cursor:
-            self.cursor.close()
-        if self.connection:
-            self.connection.close()

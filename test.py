@@ -1,4 +1,6 @@
 # import psycopg2
+import random
+
 from psycopg2 import extensions, connect, sql
 
 connection = connect(database="maguro_review",
@@ -23,7 +25,7 @@ cursor.execute(sql.SQL(
          sql.Identifier('maguro')))
 
 cursor.execute(sql.SQL(
-    "DROP TABLE IF EXISTS {}.{}"
+    "DROP TABLE IF EXISTS {}"
 ).format(sql.Identifier(dbname),
          sql.Identifier(table_name)))
 
@@ -65,7 +67,45 @@ cursor.execute(sql.SQL(
 data = cursor.fetchall()
 for row in data:
     print(row)
+#
+chars = [i for i in 'abcdefghijklmnopqrstuvwxyzABCDEF1234567890']
+days = [str(i) for i in range(1, 28)]
+month = [str(i) for i in range(1, 12)]
+years = [str(i) for i in range(1970, 2005)]
+rand_names = ["".join(random.choice(chars) for j in range(random.randint(3, 14))) for i in range(500)]
+sex = ('male', 'female')
 
+dates = ['-'.join([random.choice(years), random.choice(month), random.choice(days)]) for i in range(500)]
+
+employees = []
+for i in range(10000):
+    employees.append([random.choice(rand_names),
+                      random.choice(rand_names),
+                      random.choice(rand_names),
+                      random.choice(dates),
+                      random.choice(sex)
+                      ])
+args = ','.join(str(cursor.mogrify("(%s,%s,%s,%s,%s)", x).decode('utf8')) for x in employees)
+# print(args)
+# query = sql.SQL(
+#     'INSERT INTO {} (firstname, middle_name, lastname, birthdate, sex) VALUES {};'
+#     .format(sql.Identifier(table_name),
+#             sql.SQL(args)))
+
+query = "INSERT INTO employee (firstname, middle_name, lastname, birthdate, sex) VALUES " + (args)
+cursor.execute(query)
+
+cursor.execute(sql.SQL(
+    """SELECT firstname AS Age FROM {}"""
+).format(sql.Identifier(table_name)))
+
+data = cursor.fetchall()
+for row in data:
+    print(row)
+
+
+# print(query)
+# print(employees.__sizeof__() // 1024)
 cursor.execute(sql.SQL(
     "DROP TABLE IF EXISTS {} "
 ).format(sql.Identifier(table_name)))

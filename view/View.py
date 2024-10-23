@@ -24,14 +24,15 @@ def view():
             case "1":
                 controller.create_table()
             case "2":
-                first_name = input("Введите Имя: ")
-                middle_name = input("Введите Фамилию: ")
-                last_name = input("Введите Отчество: ")
-                birthdate = input("Введите полную дату рождения: ")
-                sex = input("Введите Пол из двух -> (male/female): ")
-                if not sex or sex not in ("male", "female"):
-                    sex = "male"
-                controller.insert_data(first_name, middle_name, last_name, birthdate, sex)
+                if controller.table_is_created():
+                    first_name = input("Введите Имя: ")
+                    middle_name = input("Введите Фамилию: ")
+                    last_name = input("Введите Отчество: ")
+                    birthdate = input("Введите полную дату рождения: ")
+                    sex = input("Введите Пол из двух -> (male/female): ")
+                    if not sex or sex not in ("male", "female"):
+                        sex = "male"
+                    controller.insert_data(first_name, middle_name, last_name, birthdate, sex)
             case "3":
                 controller.show_data()
             case "4":

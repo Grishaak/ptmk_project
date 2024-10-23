@@ -34,3 +34,6 @@ class Controller:
 
     def drop_table(self):
         self.controller.drop_table()
+
+    def table_is_created(self):
+        return self.controller.is_created_table()

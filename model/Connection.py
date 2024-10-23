@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import extensions
 
+
 # Класс для представления подключения к базе данных.
 
 class Connection:

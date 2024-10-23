@@ -36,8 +36,14 @@ class Manager:
         return True
 
     def is_created_table(self):
+        if self.table_created:
+            return True
+        print("Table is not existed")
+        return False
+
+    def is_created_table_exception(self):
         if not self.table_created:
-            raise Exception("Table is not created")
+            raise Exception
 
     def create_table(self):
         try:
@@ -72,7 +78,6 @@ class Manager:
 
     def insert_employee(self, *args, **kwargs):
         try:
-            self.is_created_table()
             explorer = Connection(self.database)
             connection, cursor = explorer.get_connection()
             employee = Employee(*args, **kwargs)
@@ -84,12 +89,12 @@ class Manager:
                              )
                            )
             explorer.close_connection()
-        except errors.UndefinedTable:
+        except (errors.UndefinedTable, Exception):
             print("Table is not existed")
 
     def show_all_employees(self):
         try:
-            self.is_created_table()
+            # self.is_created_table()
             explorer = Connection(self.database)
             connection, cursor = explorer.get_connection()
             cursor.execute(sql.SQL("""
@@ -113,7 +118,7 @@ class Manager:
 
     def execute_large_request(self):
         try:
-            self.is_created_table()
+            self.is_created_table_exception()
             chars = [i for i in 'abcdeghijklmnopqrstuvwxyz']
             days = [str(i) for i in range(1, 28)]
             month = [str(i) for i in range(1, 12)]
@@ -153,7 +158,9 @@ class Manager:
             x3 = abs(x1 - x2)
             print(f"Время потрачено: {x3:.3f} s")
 
-        except (errors.UndefinedTable, Exception):
+        # except errors.UndefinedTable:
+        #     prin
+        except Exception:
             print("Table is not existed")
 
     def shower_worker(self):
@@ -171,11 +178,9 @@ class Manager:
             raise e
         else:
             explorer.close_connection()
-            # return data
 
     def show_all_employees_for_large_request_not_optimal(self):
         try:
-            self.is_created_table()
             x1 = time.time()
             with multiprocessing.Pool(processes=8):
                 self.shower_worker()
@@ -188,7 +193,6 @@ class Manager:
 
     def show_all_employees_for_large_request_optimal(self):
         try:
-            self.is_created_table()
             explorer = Connection(self.database)
             connection, cursor = explorer.get_connection()
             x1 = time.time()
